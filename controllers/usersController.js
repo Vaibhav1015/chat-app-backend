@@ -1,16 +1,36 @@
 const User = require("../model/userModel");
 const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
+const Mailgen = require("mailgen");
+// Create a transporter object using SMTP transport
+const transporter = nodemailer.createTransport({
+  service: "gmail", // e.g., 'gmail' or use your SMTP details
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
+  },
+});
+
+const MailGenerator = new Mailgen({
+  theme: "default",
+  product: {
+    name: "Chat-App",
+    link: "https://chat-app-fun.netlify.app/",
+  },
+});
+
 const register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
     const usernameCheck = await User.findOne({ username });
     if (usernameCheck) {
-      res.json({ status: false, message: "Username already used." });
+      return res.json({ status: false, message: "Username already used." });
     }
 
     const userEmailCheck = await User.findOne({ email });
     if (userEmailCheck) {
-      res.json({ status: false, message: "Email already used." });
+      return res.json({ status: false, message: "Email already used." });
     }
 
     const hashedPass = await bcrypt.hash(password, 10);
@@ -19,8 +39,34 @@ const register = async (req, res, next) => {
       email,
       password: hashedPass,
     });
+
     delete user.password;
-    res.json({ status: true, user });
+
+    const response = {
+      body: {
+        name: username,
+        intro: "You created account on chat app",
+      },
+    };
+
+    const mail = MailGenerator.generate(response);
+    const message = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "New account created",
+      html: mail,
+    };
+
+    transporter
+      .sendMail(message)
+      .then(() => {
+        return res.status(201).json({ status: true, user });
+      })
+      .catch((error) => {
+        return res.status(500).json({ status: false });
+      });
+
+    // res.json({ status: true, user });
   } catch (error) {
     res.json({ status: false, message: error.message });
   }
