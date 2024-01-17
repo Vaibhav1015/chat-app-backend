@@ -45,7 +45,18 @@ const register = async (req, res, next) => {
     const response = {
       body: {
         name: username,
-        intro: "You created account on chat app",
+        intro:
+          "Congratulations! Your registration with Chat-App has been successfully processed, and your account is now active.",
+        action: {
+          instructions: `Your assigned username for logging in is: ${username}`,
+          button: {
+            color: "green",
+            text: "Get Started",
+            link: "https://chat-app-fun.netlify.app/",
+          },
+        },
+        outro:
+          "Need help, or have questions? Just reply to this email, we'd love to help.",
       },
     };
 
