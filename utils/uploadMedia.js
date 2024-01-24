@@ -6,7 +6,7 @@ admin.initializeApp({
     type: process.env.FIREBASE_TYPE,
     project_id: process.env.FIREBASE_PROJECT_ID,
     private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-    private_key: process.env.FIREBASE_PRIVATE_KEY,
+    private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
     client_email: process.env.FIREBASE_CLIENT_EMAIL,
     client_id: process.env.FIREBASE_CLIENT_ID,
     auth_uri: process.env.FIREBASE_AUTH_URI,
@@ -20,7 +20,6 @@ admin.initializeApp({
 });
 
 const bucket = admin.storage().bucket();
-// console.log(bucket);
 const uploadMedia = async (media) => {
   try {
     // Check if media is an array with at least one item
@@ -50,6 +49,7 @@ const uploadMedia = async (media) => {
     });
 
     const url = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+    console.log(url, "<<<<<<<<<url");
     return url;
   } catch (error) {
     console.error("Error uploading media:", error.message);
