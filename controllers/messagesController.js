@@ -1,9 +1,17 @@
 const MessageModel = require("../model/messageModel");
+const uploadMedia = require("../utils/uploadMedia");
 const addMessage = async (req, res) => {
   try {
     const { from, to, message } = req.body;
-    const data = await MessageModel.create({
-      message: { text: message },
+    let mediaUrl = null;
+
+    if (req.files && req.files.length > 0) {
+      const media = req.files;
+      mediaUrl = await uploadMedia(media);
+    }
+
+    data = await MessageModel.create({
+      message: { text: message, mediaUrl: mediaUrl },
       users: [from, to],
       sender: from,
     });
@@ -30,7 +38,7 @@ const getAllMessage = async (req, res) => {
     const projectMessages = messages.map((msg) => {
       return {
         fromSelf: msg.sender.toString() === from,
-        message: msg.message.text,
+        message: msg.message,
       };
     });
     res.json(projectMessages);
