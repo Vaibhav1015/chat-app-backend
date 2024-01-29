@@ -37,8 +37,8 @@ const server = app.listen(port || 3001, () => {
 //Socket.io connection
 const io = socket(server, {
   cors: {
-    origin: "https://chat-app-fun.netlify.app", //"http://localhost:3000" //"https://chat-app-fun.netlify.app"
-    // origin: process.env.SOCKET_ORIGIN,
+    // origin: "https://chat-app-fun.netlify.app", //"http://localhost:3000" //"https://chat-app-fun.netlify.app"
+    origin: process.env.SOCKET_ORIGIN,
     credentials: true,
   },
 });
