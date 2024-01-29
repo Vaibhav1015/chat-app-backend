@@ -40,6 +40,7 @@ const getAllMessage = async (req, res) => {
         fromSelf: msg.sender.toString() === from,
         message: msg.message,
         _id: msg._id,
+        createdAt: msg.createdAt,
       };
     });
     res.json(projectMessages);
