@@ -17,7 +17,7 @@ const addMessage = async (req, res) => {
     });
 
     if (data) {
-      res.json({ msg: "Message added successfully." });
+      res.json({ msg: "Message added successfully.", data });
     } else {
       res.json({ msg: "Failed to add message to the database" });
     }
@@ -39,6 +39,7 @@ const getAllMessage = async (req, res) => {
       return {
         fromSelf: msg.sender.toString() === from,
         message: msg.message,
+        _id: msg._id,
       };
     });
     res.json(projectMessages);
@@ -47,4 +48,27 @@ const getAllMessage = async (req, res) => {
   }
 };
 
-module.exports = { addMessage, getAllMessage };
+const deleteMessage = async (req, res) => {
+  try {
+    const { messageIds } = req.body;
+
+    // Validate messageIds
+    if (!messageIds || !Array.isArray(messageIds)) {
+      return res.status(400).json({ message: "Invalid messageIds" });
+    }
+
+    // Delete messages
+    const deletedRes = await MessageModel.deleteMany({
+      _id: { $in: messageIds },
+    });
+
+    res
+      .status(200)
+      .json({ message: "Messages deleted successfully", deletedRes });
+  } catch (error) {
+    console.error("Error deleting messages:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+module.exports = { addMessage, getAllMessage, deleteMessage };

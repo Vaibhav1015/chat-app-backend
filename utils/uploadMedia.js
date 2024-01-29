@@ -49,7 +49,6 @@ const uploadMedia = async (media) => {
     });
 
     const url = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
-    console.log(url, "<<<<<<<<<url");
     return url;
   } catch (error) {
     console.error("Error uploading media:", error.message);
